@@ -23,6 +23,12 @@ api-token
 # 只允许公开已确认使用虚拟数据的截图，其他截图默认忽略
 /docs/screenshots/*
 !/docs/screenshots/issues.png
-!/docs/screenshots/entries.png
 !/docs/screenshots/brokers.png
 !/docs/screenshots/stats.png
+!/docs/screenshots/ai.png
+!/docs/screenshots/entry-form-filter.png
+!/docs/screenshots/entry-form.png
+!/docs/screenshots/issue-detail.png
+!/docs/screenshots/ledger.png
+!/docs/screenshots/sale-detail.png
+!/docs/screenshots/stats-filter.png
