@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>打新账本</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">北</span>
+    <div class="brand-text">
+      <h1>打新账本</h1>
+      <p class="sub" id="source-line">正在读取…</p>
+    </div>
+  </div>
+  <div class="actions">
+    <button id="btn-refresh" class="btn btn-primary">同步新股</button>
+    <button id="btn-backup" class="btn" title="把账本导出成文件">备份</button>
+    <button id="btn-restore" class="btn" title="从备份文件恢复">恢复</button>
+    <button id="btn-ai" class="btn" title="让 AI agent 读写这个账本">AI 接入</button>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="tab active" data-tab="issues" role="tab">新股列表</button>
+  <button class="tab" data-tab="entries" role="tab">我的打新<span class="badge" id="entry-count">0</span></button>
+  <button class="tab" data-tab="brokers" role="tab">券商账户<span class="badge" id="broker-count">0</span></button>
+  <button class="tab" data-tab="stats" role="tab">收益统计</button>
+</nav>
+
+<main>
+  <section id="view-issues" class="view">
+    <div class="view-head">
+      <div class="filter-group" id="issue-filter">
+        <button class="chip active" data-scope="all">全部</button>
+        <button class="chip" data-scope="issuing">发行中</button>
+        <button class="chip" data-scope="done">已上市</button>
+      </div>
+      <input id="issue-search" class="search" type="search" placeholder="搜索名称或代码" autocomplete="off">
+    </div>
+    <div class="table-wrap">
+      <table class="data-table" id="issue-table">
+        <thead>
+          <tr>
+            <th>申购代码</th>
+            <th>名称</th>
+            <th class="num">发行价</th>
+            <th class="num">发行数量</th>
+            <th>申购日</th>
+            <th>中签公布</th>
+            <th>上市日</th>
+            <th class="col-action"></th>
+          </tr>
+        </thead>
+        <tbody id="issue-body"></tbody>
+      </table>
+      <div class="empty" id="issue-empty" hidden>
+        <p>还没有新股数据</p>
+        <p class="hint">点右上角「同步新股」从北交所获取最新发行信息</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-entries" class="view" hidden>
+    <div class="view-head">
+      <h2 class="view-title">我的打新</h2>
+      <button id="btn-manual" class="btn btn-ghost">手动记一笔</button>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table" id="entry-table">
+        <thead>
+          <tr>
+            <th>新股</th>
+            <th>账户</th>
+            <th class="num">金额 / 股数</th>
+            <th class="num">中签</th>
+            <th class="num">缴款成本</th>
+            <th class="num">资金成本</th>
+            <th class="num">净收益</th>
+            <th>状态</th>
+            <th class="col-action"></th>
+          </tr>
+        </thead>
+        <tbody id="entry-body"></tbody>
+      </table>
+      <div class="empty" id="entry-empty">
+        <p>账本还是空的</p>
+        <p class="hint">在新股列表里点「记一笔」，把打过的票记下来</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-brokers" class="view" hidden>
+    <div class="view-head">
+      <div>
+        <h2 class="view-title">券商账户</h2>
+        <p class="view-sub">佣金率与资金年化利率用于估算卖出费用和冻结资金的占用成本</p>
+      </div>
+      <button id="btn-add-broker" class="btn btn-ghost">新增账户</button>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table" id="broker-table">
+        <thead>
+          <tr>
+            <th>券商 / 账户</th>
+            <th class="num">佣金率</th>
+            <th class="num">最低佣金</th>
+            <th class="num">资金年化</th>
+            <th class="num">记录</th>
+            <th class="num">占用资金</th>
+            <th class="num">资金成本</th>
+            <th class="col-action"></th>
+          </tr>
+        </thead>
+        <tbody id="broker-body"></tbody>
+      </table>
+      <div class="empty" id="broker-empty">
+        <p>还没有券商账户</p>
+        <p class="hint">先建一个账户，填上佣金率和资金年化利率，记账时会自动估算成本</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-stats" class="view" hidden>
+    <div class="view-head">
+      <div class="stat-filters">
+        <label class="select-inline">
+          <span>年份</span>
+          <select id="stat-year"></select>
+        </label>
+        <label class="select-inline">
+          <span>月份</span>
+          <select id="stat-month"></select>
+        </label>
+        <label class="select-inline">
+          <span>券商账户</span>
+          <select id="stat-broker"></select>
+        </label>
+        <button id="stat-reset" class="btn btn-ghost" hidden>重置</button>
+      </div>
+      <p class="view-sub" id="stat-scope">全部记录</p>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <p class="stat-label">净收益</p>
+        <p class="stat-value" id="stat-realized">—</p>
+        <p class="stat-foot" id="stat-return">—</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">资金成本</p>
+        <p class="stat-value" id="stat-capital">—</p>
+        <p class="stat-foot" id="stat-capital-foot">—</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">资金年化回报</p>
+        <p class="stat-value" id="stat-annual">—</p>
+        <p class="stat-foot" id="stat-annual-foot">—</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">中签情况</p>
+        <p class="stat-value" id="stat-allot">—</p>
+        <p class="stat-foot" id="stat-winrate">—</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">持仓成本</p>
+        <p class="stat-value" id="stat-holding">—</p>
+        <p class="stat-foot" id="stat-holding-shares">—</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">累计费用</p>
+        <p class="stat-value" id="stat-fee">—</p>
+        <p class="stat-foot" id="stat-fee-foot">—</p>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <h2 class="panel-title">按月<span class="panel-count" id="month-count"></span></h2>
+        <p class="panel-hint">按申购月份归属；点某个月按它筛选，列表始终列出全部年份</p>
+      </div>
+      <div class="month-list" id="month-list"></div>
+      <div class="empty" id="month-empty" hidden>
+        <p class="hint">当前筛选下没有可统计的记录</p>
+      </div>
+    </div>
+    <div class="panel" id="detail-panel">
+      <div class="panel-head">
+        <h2 class="panel-title">明细<span class="panel-count" id="detail-count"></span></h2>
+        <p class="panel-hint" id="detail-hint">点上面的某个月只看那个月；点某一行可改这条记录</p>
+      </div>
+      <div class="table-wrap detail-wrap" id="detail-wrap">
+        <table class="data-table" id="detail-table">
+          <thead>
+            <tr>
+              <th>新股</th>
+              <th>账户</th>
+              <th>申购日</th>
+              <th class="num">中签</th>
+              <th class="num">申购资金</th>
+              <th class="num">卖出</th>
+              <th class="num">净收益</th>
+              <th class="num">收益率</th>
+              <th class="col-detail-action"></th>
+            </tr>
+          </thead>
+          <tbody id="detail-body"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="detail-empty" hidden>
+        <p class="hint">当前筛选下没有记录</p>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <h2 class="panel-title">按年</h2>
+        <p class="panel-hint">同一年发行的新股</p>
+      </div>
+      <table class="data-table" id="year-table">
+        <thead>
+          <tr>
+            <th>年份</th>
+            <th class="num">记录</th>
+            <th class="num">中签只数</th>
+            <th class="num">申购资金</th>
+            <th class="num">卖出金额</th>
+            <th class="num">净收益</th>
+            <th class="num">收益率</th>
+          </tr>
+        </thead>
+        <tbody id="year-body"></tbody>
+      </table>
+      <div class="empty" id="year-empty" hidden>
+        <p class="hint">当前筛选下没有可统计的记录</p>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <h2 class="panel-title">按券商</h2>
+        <p class="panel-hint">同一只新股在不同账户各自独立核算</p>
+      </div>
+      <table class="data-table" id="account-table">
+        <thead>
+          <tr>
+            <th>账户</th>
+            <th class="num">记录</th>
+            <th class="num">中签只数</th>
+            <th class="num">申购资金</th>
+            <th class="num">资金成本</th>
+            <th class="num">净收益</th>
+            <th class="num">收益率</th>
+          </tr>
+        </thead>
+        <tbody id="account-body"></tbody>
+      </table>
+      <div class="empty" id="account-empty" hidden>
+        <p class="hint">当前筛选下没有可统计的记录</p>
+      </div>
+    </div>
+    <p class="disclaimer">按年、按月按「申购月份」归属：一只新股从申购到卖出可能跨月，整个批次算在申购当月，各月相加正好等于总计。收益为按你填写的成交价、费用与资金利率计算的结果，不含各家券商的税费差异；资金成本未填实际值时按账户年化利率与冻款天数估算。数据来自北交所公开信息，仅供记录参考。</p>
+  </section>
+</main>
+
+<!-- 新股详情：看发行信息，以及我在这个票上的记录 -->
+<div class="drawer-mask" id="issue-mask" hidden></div>
+<aside class="drawer" id="issue-drawer" hidden aria-label="新股详情">
+  <header class="drawer-head">
+    <div>
+      <h2 id="issue-title">新股</h2>
+      <p class="drawer-sub" id="issue-sub"></p>
+    </div>
+    <button type="button" class="icon-btn" id="issue-close" aria-label="关闭">×</button>
+  </header>
+  <div class="issue-body" id="issue-detail"></div>
+  <footer class="drawer-foot">
+    <div class="spacer"></div>
+    <button type="button" class="btn btn-ghost" id="btn-issue-close">关闭</button>
+    <button type="button" class="btn btn-primary" id="btn-issue-entry">记一笔</button>
+  </footer>
+</aside>
+
+<!-- 打新记录表单 -->
+<div class="drawer-mask" id="drawer-mask" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-label="打新记录">
+  <form id="entry-form" autocomplete="off">
+    <header class="drawer-head">
+      <div>
+        <h2 id="drawer-title">记一笔</h2>
+        <p class="drawer-sub" id="drawer-sub"></p>
+      </div>
+      <button type="button" class="icon-btn" id="drawer-close" aria-label="关闭">×</button>
+    </header>
+
+    <input type="hidden" id="f-id">
+
+    <div class="field">
+      <span>新股</span>
+      <div class="combo" id="issue-combo">
+        <input id="f-issue" type="text" autocomplete="off" spellcheck="false"
+               placeholder="输入名称或代码筛选（中文也行）">
+        <div class="combo-list" id="f-issue-list" role="listbox" hidden></div>
+      </div>
+      <em class="field-hint" id="f-issue-hint">点开可浏览全部，或输入名称、代码筛选。</em>
+    </div>
+
+    <div class="field-row">
+      <label class="field">
+        <span>券商账户</span>
+        <select id="f-broker"></select>
+      </label>
+      <label class="field">
+        <span>发行价（元）</span>
+        <input id="f-price" type="text" inputmode="decimal" placeholder="4.48">
+      </label>
+    </div>
+
+    <div class="field-row">
+      <label class="field">
+        <span>申购数量（股）</span>
+        <input id="f-apply" type="text" inputmode="numeric" placeholder="0">
+      </label>
+      <label class="field">
+        <span>中签数量（股）</span>
+        <input id="f-allotted" type="text" inputmode="numeric" placeholder="未中签留空">
+      </label>
+    </div>
+
+    <div class="field-row">
+      <label class="field">
+        <span>申购日期</span>
+        <input id="f-purchase" type="date">
+      </label>
+      <label class="field">
+        <span>冻款日</span>
+        <input id="f-freeze" type="date">
+      </label>
+    </div>
+
+    <div class="field-row">
+      <label class="field">
+        <span>退款日</span>
+        <input id="f-refund" type="date">
+      </label>
+      <label class="field">
+        <span>资金成本（元）</span>
+        <input id="f-capital" type="text" inputmode="decimal" placeholder="留空自动估算">
+      </label>
+    </div>
+
+    <div class="field-row">
+      <label class="field">
+        <span>其他费用（元）</span>
+        <input id="f-otherfee" type="text" inputmode="decimal" placeholder="手续费等">
+      </label>
+      <label class="field">
+        <span>备注</span>
+        <input id="f-note" type="text" placeholder="选填">
+      </label>
+    </div>
+
+    <div class="sale-head">
+      <div>
+        <span class="field-title">卖出明细</span>
+        <p class="field-hint">分几笔卖就记几行；一笔都没卖就留空。</p>
+      </div>
+      <button type="button" class="mini-btn" id="btn-add-sale">+ 加一笔</button>
+    </div>
+    <div class="sale-list" id="sale-list"></div>
+    <p class="sale-total" id="sale-total"></p>
+
+    <p class="form-note" id="form-note">成交金额填了就以它为准，成交价只用于展示；费用留空时按账户佣金率逐笔估算。</p>
+
+    <footer class="drawer-foot">
+      <button type="button" class="btn btn-danger" id="btn-delete" hidden>删除</button>
+      <div class="spacer"></div>
+      <button type="button" class="btn" id="btn-cancel">取消</button>
+      <button type="submit" class="btn btn-primary" id="btn-save">保存</button>
+    </footer>
+  </form>
+</aside>
+
+<!-- 券商账户表单 -->
+<div class="drawer-mask" id="broker-mask" hidden></div>
+<aside class="drawer" id="broker-drawer" hidden aria-label="券商账户">
+  <form id="broker-form" autocomplete="off">
+    <header class="drawer-head">
+      <div>
+        <h2 id="broker-title">新增账户</h2>
+        <p class="drawer-sub">费率只影响之后新记的账，已有记录保留当时的费率</p>
+      </div>
+      <button type="button" class="icon-btn" id="broker-close" aria-label="关闭">×</button>
+    </header>
+
+    <input type="hidden" id="b-id">
+
+    <div class="field-row">
+      <label class="field">
+        <span>券商名称</span>
+        <input id="b-name" type="text" placeholder="如 华泰证券" required>
+      </label>
+      <label class="field">
+        <span>账户别名</span>
+        <input id="b-account" type="text" placeholder="如 主账户">
+      </label>
+    </div>
+
+    <div class="field-row">
+      <label class="field">
+        <span>佣金率（万分之）</span>
+        <input id="b-commission" type="text" inputmode="decimal" placeholder="2.5">
+      </label>
+      <label class="field">
+        <span>最低佣金（元）</span>
+        <input id="b-min" type="text" inputmode="decimal" placeholder="5">
+      </label>
+    </div>
+
+    <label class="field">
+      <span>资金年化利率（%）</span>
+      <input id="b-rate" type="text" inputmode="decimal" placeholder="3.85，用于估算冻结资金的占用成本">
+    </label>
+
+    <label class="field">
+      <span>备注</span>
+      <input id="b-note" type="text" placeholder="选填">
+    </label>
+
+    <p class="form-note" id="broker-note">佣金率按成交金额计算，低于最低佣金时按最低佣金收取。</p>
+
+    <footer class="drawer-foot">
+      <button type="button" class="btn btn-danger" id="btn-broker-delete" hidden>删除</button>
+      <div class="spacer"></div>
+      <button type="button" class="btn" id="btn-broker-cancel">取消</button>
+      <button type="submit" class="btn btn-primary" id="btn-broker-save">保存</button>
+    </footer>
+  </form>
+</aside>
+
+<!-- AI 接入面板 -->
+<div class="drawer-mask" id="ai-mask" hidden></div>
+<aside class="drawer" id="ai-drawer" hidden aria-label="AI 接入">
+  <header class="drawer-head">
+    <div>
+      <h2>AI 接入</h2>
+      <p class="drawer-sub">本机接口 + skill 包，让 agent 记账</p>
+    </div>
+    <button type="button" class="icon-btn" id="ai-close" aria-label="关闭">×</button>
+  </header>
+  <div class="ai-body" id="ai-body"></div>
+  <footer class="drawer-foot">
+    <button type="button" class="btn btn-primary" id="btn-ai-skill">导出 skill 包</button>
+    <div class="spacer"></div>
+    <button type="button" class="btn btn-ghost" id="btn-ai-token">重置令牌</button>
+  </footer>
+</aside>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="app.js"></script>
+</body>
+</html>

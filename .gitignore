@@ -1,0 +1,24 @@
+# 构建产物
+bin/
+dist/
+
+# 本地账本数据（可能含个人记录，不入库）
+*.db
+*.db-wal
+*.db-shm
+ledger.db*
+
+# 本地导出与截图
+outputs/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 本地凭据与运行记录
+*.log
+api.json
+api-token
+
+# 截图可能含有账本个人数据
+/docs/screenshots/

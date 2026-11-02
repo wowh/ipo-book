@@ -1,0 +1,1067 @@
+:root {
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --border: #e4e7ec;
+  --border-strong: #d0d5dd;
+  --text: #101828;
+  --text-soft: #667085;
+  --text-faint: #98a2b3;
+  --brand: #9e1b1b;
+  --brand-soft: #fdf2f2;
+  --profit: #d92d20;
+  --loss: #067647;
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.06);
+}
+
+* { box-sizing: border-box; }
+
+/* 抽屉用 flex 布局，必须让 hidden 属性优先于 display，否则会一直显示。 */
+[hidden] { display: none !important; }
+
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "Segoe UI", sans-serif;
+  font-size: 13.5px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, p { margin: 0; }
+
+/* ---------- 顶栏 ---------- */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.brand { display: flex; align-items: center; gap: 11px; }
+
+.logo {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(160deg, #b3251f, #8a1414);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.brand-text h1 {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.sub {
+  margin-top: 1px;
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+.sub .dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin: 0 5px 2px;
+  border-radius: 50%;
+  background: var(--text-faint);
+}
+
+.sub .warn { color: #b54708; }
+
+.actions { display: flex; gap: 8px; }
+
+/* ---------- 按钮 ---------- */
+
+.btn {
+  height: 32px;
+  padding: 0 13px;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, opacity 0.12s;
+  white-space: nowrap;
+}
+
+.btn:hover { background: #f9fafb; border-color: #b9c0ca; }
+.btn:active { background: #f2f4f7; }
+.btn:disabled { opacity: 0.55; cursor: default; }
+
+.btn-primary {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+.btn-primary:hover { background: #8a1717; border-color: #8a1717; }
+.btn-primary:active { background: #791212; }
+
+.btn-ghost { border-color: transparent; color: var(--text-soft); }
+.btn-ghost:hover { background: #eef0f3; border-color: transparent; color: var(--text); }
+
+.btn-danger { color: var(--profit); border-color: #f3c6c1; background: #fff; }
+.btn-danger:hover { background: #fdf3f2; border-color: #eda9a1; }
+
+.icon-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.icon-btn:hover { background: #f2f4f7; color: var(--text); }
+
+/* ---------- 标签页 ---------- */
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 20px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.tab {
+  position: relative;
+  padding: 10px 2px;
+  margin-right: 18px;
+  border: none;
+  background: none;
+  color: var(--text-soft);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.tab:hover { color: var(--text); }
+
+.tab.active { color: var(--text); font-weight: 600; }
+
+.tab.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--brand);
+  border-radius: 2px 2px 0 0;
+}
+
+.badge {
+  display: inline-block;
+  min-width: 17px;
+  margin-left: 5px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: #eef0f3;
+  color: var(--text-soft);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 17px;
+  text-align: center;
+}
+
+.tab.active .badge { background: var(--brand-soft); color: var(--brand); }
+
+/* ---------- 主区域 ---------- */
+
+main {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px 20px 24px;
+}
+
+.view-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.view-title { font-size: 13.5px; font-weight: 600; }
+
+.filter-group { display: flex; gap: 6px; }
+
+.chip {
+  height: 28px;
+  padding: 0 11px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text-soft);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.chip:hover { border-color: var(--border-strong); color: var(--text); }
+
+.chip.active {
+  background: var(--brand-soft);
+  border-color: #f0cfcf;
+  color: var(--brand);
+  font-weight: 500;
+}
+
+.search {
+  width: 190px;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 12.5px;
+  outline: none;
+}
+
+.search:focus { border-color: #c9a3a3; box-shadow: 0 0 0 3px rgba(158, 27, 27, 0.07); }
+
+/* ---------- 表格 ---------- */
+
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  /* 列多时不压折行，交给横向滚动。 */
+  overflow: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.data-table th {
+  padding: 9px 12px;
+  background: #fbfcfd;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-soft);
+  font-weight: 500;
+  font-size: 12px;
+  text-align: left;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.data-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid #f2f3f5;
+  vertical-align: middle;
+}
+
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover { background: #fcfcfd; }
+
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+.data-table th.num { text-align: right; }
+.data-table th:last-child, .data-table td:last-child { text-align: right; }
+.col-action { width: 148px; }
+
+/* 申购列上排股数、下排金额，两项挤一格，省一列的宽度。 */
+.cell-main { display: block; }
+.cell-sub {
+  display: block;
+  font-size: 11.5px;
+  color: var(--text-soft);
+  line-height: 1.35;
+}
+.col-apply { white-space: nowrap; }
+/* 账户名、「持 N」和新股名被挤断成两三行比留白更难看，宁可让表格横向滚动。 */
+.col-account, .col-lot, .col-name { white-space: nowrap; }
+
+.row-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.code {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-soft);
+  font-size: 12.5px;
+}
+
+.name { font-weight: 500; }
+
+.muted { color: var(--text-faint); }
+
+.profit { color: var(--profit); font-variant-numeric: tabular-nums; }
+.loss { color: var(--loss); font-variant-numeric: tabular-nums; }
+
+.tag {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 4px;
+  background: #f2f4f7;
+  color: var(--text-soft);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+
+.tag-on { background: var(--brand-soft); color: var(--brand); }
+.tag-done { background: #eef4ff; color: #3538cd; }
+.tag-win { background: #fdf3f2; color: var(--profit); }
+
+.row-btn {
+  height: 26px;
+  padding: 0 10px;
+  white-space: nowrap;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.row-btn:hover { background: #f9fafb; border-color: #b9c0ca; }
+.row-btn.quiet { border-color: transparent; color: var(--text-soft); }
+.row-btn.quiet:hover { background: #eef0f3; color: var(--text); }
+
+/* ---------- 空状态 ---------- */
+
+.empty {
+  padding: 46px 20px;
+  text-align: center;
+  color: var(--text-soft);
+}
+
+.empty p:first-child { font-size: 13.5px; margin-bottom: 5px; }
+.hint { color: var(--text-faint); font-size: 12.5px; }
+
+/* ---------- 统计 ---------- */
+
+/* 筛选条：年份、月份、账户三个下拉，右侧是当前筛选范围的说明。 */
+.stat-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.select-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--text-soft);
+}
+
+.select-inline select {
+  height: 28px;
+  padding: 0 24px 0 9px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background-color: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 12.5px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-faint) 50%),
+    linear-gradient(135deg, var(--text-faint) 50%, transparent 50%);
+  background-position: calc(100% - 13px) 12px, calc(100% - 8px) 12px;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.select-inline select:focus {
+  border-color: #c9a3a3;
+  box-shadow: 0 0 0 3px rgba(158, 27, 27, 0.07);
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+/* 窗口窄到放不下六张卡时排成 3 × 2，别剩一张孤零零地挂在下一行。 */
+@media (max-width: 1120px) {
+  .stat-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.stat-card {
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.stat-label { font-size: 12px; color: var(--text-soft); }
+
+.stat-value {
+  margin-top: 5px;
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.2px;
+}
+
+.stat-foot { margin-top: 2px; font-size: 12px; color: var(--text-faint); }
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.panel + .panel { margin-top: 12px; }
+
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-title { font-size: 13px; font-weight: 600; }
+.panel-count { margin-left: 6px; font-weight: 400; color: var(--text-faint); }
+.panel-hint { font-size: 11.5px; color: var(--text-faint); }
+
+/* 月度条形：一行一个月，条长表示净收益的相对大小。 */
+/* 月份多时列表内部滚动，别把下面的按年、按券商顶到看不见。 */
+.month-list {
+  display: flex;
+  flex-direction: column;
+  /* 年度小标题 32px + 四行 58px：正好一整屏，露出半行看起来像渲染坏了。 */
+  max-height: 264px;
+  overflow: auto;
+}
+
+/* 年度小标题：一年只有一条，滚到哪儿都能看见自己在哪一年，
+   所以贴在列表顶部。年份筛选选中的那一年用品牌色标出来。 */
+.month-year {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-height: 32px;
+  padding: 7px 14px;
+  background: #fafbfc;
+  border-bottom: 1px solid #eef0f3;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+.month-year em {
+  font-style: normal;
+  font-weight: 400;
+  color: var(--text-faint);
+}
+
+.month-year.active { background: var(--brand-soft); color: var(--brand); }
+.month-year.active em { color: var(--brand); opacity: .7; }
+
+.month-row {
+  display: grid;
+  grid-template-columns: 208px 1fr 116px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 58px;
+  padding: 8px 14px;
+  border: none;
+  border-bottom: 1px solid #f2f3f5;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.month-row:last-child { border-bottom: none; }
+.month-row:hover { background: #fcfcfd; }
+.month-row.static { cursor: default; }
+.month-row.active { background: var(--brand-soft); }
+
+.month-label {
+  display: flex;
+  flex-direction: column;
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.month-label small {
+  margin-top: 1px;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-faint);
+}
+
+.bar-track {
+  height: 8px;
+  border-radius: 4px;
+  background: #f2f4f7;
+  overflow: hidden;
+}
+
+.bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--profit);
+}
+
+.bar-fill.loss { background: var(--loss); }
+.bar-fill.muted { background: var(--border-strong); }
+
+.month-value {
+  text-align: right;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 合计行压一条线，和上面的明细分开。 */
+.total-row td {
+  background: #fbfcfd;
+  border-top: 1px solid var(--border);
+  font-weight: 600;
+}
+
+/* 收益明细：选了一个月之后逐条列出那个月的记录。
+   整行都是入口（点行即改这条），所以整行给手型；列表限高，记录多时内部滚动。 */
+.detail-wrap { max-height: 372px; }
+.detail-row { cursor: pointer; }
+.col-detail-action { width: 64px; }
+.col-date { white-space: nowrap; }
+
+/* 面板里的空状态不用整页那么高，留一句提示就够。 */
+.panel > .empty { padding: 30px 20px; }
+
+.disclaimer {
+  margin-top: 14px;
+  color: var(--text-faint);
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+
+/* ---------- 抽屉表单 ---------- */
+
+/* 动画只做位移，不用 opacity：窗口未聚焦或后台合成时动画可能停在首帧，
+   若首帧是透明的，面板会看起来没打开。 */
+.drawer-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 24, 40, 0.28);
+  z-index: 20;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 392px;
+  max-width: 100vw;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  box-shadow: -8px 0 28px rgba(16, 24, 40, 0.1);
+  z-index: 21;
+  overflow: auto;
+}
+
+/* 抽屉不做进入动画：动画在后台窗口里可能停在首帧，面板会带着 14px 位移，
+   右边那一截（密码框、右下按钮）就被切在窗口外。遮罩的淡入保留，它不承载布局。 */
+
+.drawer-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.drawer-head h2 { font-size: 15px; font-weight: 600; }
+.drawer-sub { margin-top: 2px; font-size: 12px; color: var(--text-soft); }
+
+#entry-form, #broker-form { display: flex; flex-direction: column; flex: 1; }
+#entry-form > .field, #entry-form > .field-row, #entry-form > .form-note,
+#broker-form > .field, #broker-form > .field-row, #broker-form > .form-note { margin: 0 18px; }
+#entry-form > .field:first-of-type, #broker-form > .field:first-of-type { margin-top: 14px; }
+
+.field { display: block; margin-bottom: 11px; }
+
+.field > span {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+.field input,
+.field select {
+  width: 100%;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: #c9a3a3;
+  box-shadow: 0 0 0 3px rgba(158, 27, 27, 0.07);
+}
+
+/* 下拉框用系统控件，但要去掉默认的外观差异。 */
+.field select {
+  appearance: none;
+  padding-right: 26px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-faint) 50%),
+    linear-gradient(135deg, var(--text-faint) 50%, transparent 50%);
+  background-position: calc(100% - 14px) 14px, calc(100% - 9px) 14px;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.field input::placeholder { color: #b4bcc7; }
+
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* 新股选择：点一下就是下拉，列出全部候选；输入则实时筛选。
+   候选浮在输入框下方，抽屉本身可滚动，列表挂在 .combo 上跟着一起走。 */
+.combo { position: relative; }
+
+/* 右侧的小三角提示「这是个下拉」，和券商账户的原生下拉保持同一套观感。 */
+.combo input {
+  padding-right: 26px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-faint) 50%),
+    linear-gradient(135deg, var(--text-faint) 50%, transparent 50%);
+  background-position: calc(100% - 14px) 14px, calc(100% - 9px) 14px;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.combo-list {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 258px;
+  overflow-y: auto;
+  padding: 4px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 10px 24px rgba(16, 24, 40, 0.14);
+}
+
+.combo-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.combo-item:hover,
+.combo-item.active { background: var(--brand-soft); }
+
+.combo-item .ci-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.combo-item .ci-meta {
+  margin-left: auto;
+  flex: none;
+  color: var(--text-faint);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.combo-empty {
+  padding: 7px 8px;
+  color: var(--text-faint);
+  font-size: 12px;
+}
+
+/* 估算值标记：提醒这个数字是按费率算出来的，不是实际发生额。 */
+.est {
+  display: inline-block;
+  margin-left: 3px;
+  padding: 0 3px;
+  border-radius: 3px;
+  background: #fff4e5;
+  color: #b54708;
+  font-size: 10px;
+  line-height: 14px;
+  vertical-align: 1px;
+}
+
+/* ---------- AI 接入面板 ---------- */
+
+.ai-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 18px 18px;
+}
+
+.ai-block { margin-top: 14px; }
+
+.ai-label {
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.ai-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+}
+
+.ai-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #12b76a;
+}
+
+.ai-dot.off { background: var(--text-faint); }
+
+/* 地址与令牌都用等宽字体，方便逐字核对，也能整段选中复制。 */
+.ai-value {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #f9fafb;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+}
+
+.ai-value > span:first-child {
+  flex: 1;
+  min-width: 0;
+  word-break: break-all;
+  user-select: text;
+}
+
+.ai-actions { display: flex; flex: none; gap: 5px; }
+
+.mini-btn {
+  height: 22px;
+  padding: 0 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--text-soft);
+  font: inherit;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+.mini-btn:hover { color: var(--text); background: #f4f5f7; }
+
+.ai-note {
+  margin-top: 7px;
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--text-faint);
+}
+
+.ai-code {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #101828;
+  color: #e4e7ec;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11.5px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-all;
+  user-select: text;
+}
+
+.view-sub {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.form-note {
+  margin-top: 2px;
+  color: var(--text-faint);
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+
+.drawer-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding: 14px 18px;
+  border-top: 1px solid var(--border);
+  background: #fcfcfd;
+}
+
+.spacer { flex: 1; }
+
+/* ---------- 提示 ---------- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%);
+  max-width: 420px;
+  padding: 9px 15px;
+  border-radius: 8px;
+  background: #1d2939;
+  color: #fff;
+  font-size: 12.5px;
+  line-height: 1.5;
+  box-shadow: 0 8px 22px rgba(16, 24, 40, 0.18);
+  z-index: 40;
+}
+
+.toast.warn { background: #93370d; }
+.toast.error { background: #912018; }
+.toast.ok { background: #054f31; }
+
+
+
+@media (max-width: 720px) {
+  .topbar { flex-wrap: wrap; padding: 12px 14px; }
+  main { padding: 12px 14px 20px; }
+  .search { width: 130px; }
+  .drawer { width: 100vw; }
+}
+
+/* 尊重系统的「减少动态效果」：抽屉直接出现，不做进入动画。
+   同样的选择也用于截图核对——动画在后台窗口里可能停在首帧，
+   面板会带着 14px 位移被拍下来。 */
+@media (prefers-reduced-motion: reduce) {
+  .drawer, .drawer-mask, .toast { animation: none !important; }
+}
+
+/* ---------- 卖出明细 ---------- */
+/* 一笔卖出就是一张小卡片：成交日、股数、价格、金额、费用各自有位置，
+   不用再挤成「均价 + 数量 + 合计金额」三个容易对不上的框。 */
+.sale-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 16px 18px 0;
+}
+
+.field-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.field-hint {
+  margin: 2px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-faint);
+}
+
+/* 提示放在 .field 里（新股下拉的下方说明），别被 em 的斜体带跑。 */
+.field .field-hint { font-style: normal; }
+
+.sale-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 8px 18px 0;
+}
+
+.sale-row {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 9px 12px 2px;
+  background: #fafbfc;
+}
+
+.sale-row-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.sale-index {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+.sale-row .field-row { margin: 0; }
+.sale-row .field { margin-bottom: 8px; }
+.sale-row .field span { font-size: 11px; color: var(--text-faint); }
+.sale-row .field input { height: 30px; font-size: 12.5px; }
+
+.sale-del {
+  height: 22px;
+  padding: 0 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--text-soft);
+  font: inherit;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+.sale-del:hover { color: var(--profit); border-color: var(--profit); }
+
+.sale-total {
+  margin: 8px 18px 0;
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+.sale-total strong { color: var(--text); font-weight: 600; }
+.sale-total .warn { color: var(--profit); }
+
+/* ---------- 新股详情 ---------- */
+
+.issue-body {
+  flex: 1;
+  padding: 4px 18px 18px;
+}
+
+/* 名称/值两列对齐；值一律左对齐，日期与金额才好逐行扫读。 */
+.kv {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: 7px 10px;
+  margin: 12px 0 0;
+  font-size: 13px;
+}
+
+.kv dt { color: var(--text-soft); }
+.kv dd { margin: 0; word-break: break-word; }
+
+.issue-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 22px 0 2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+.issue-note {
+  margin-top: 8px;
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--text-soft);
+}
+
+.mine-card {
+  margin-top: 10px;
+  padding: 12px 12px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fcfcfd;
+}
+
+.mine-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mine-account { font-size: 13px; font-weight: 600; }
+.mine-card .kv { grid-template-columns: 64px 1fr; margin-top: 8px; font-size: 12.5px; }
+
+/* 卖出明细按笔列出，金额靠右对齐才方便和交割单对。 */
+.mine-sales {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+.mine-sale { display: grid; grid-template-columns: 76px 1fr 1fr 1fr; gap: 6px; }
+
+.mine-total { margin-top: 8px; font-size: 12.5px; color: var(--text-soft); }
+.mine-total strong { font-size: 13px; }
+.mine-card .mini-btn { margin-top: 10px; }
+.issue-count { margin-left: 6px; font-weight: 400; color: var(--text-faint); }
